@@ -1,9 +1,9 @@
-from cv2 import cv2
+import cv2
 import os
 import numpy as np
 
-dataset_path = "Sketchy/"
-photo_path = os.path.join(dataset_path, 'photo/')
+dataset_path = "Sketch-Icon-Dataset/"
+icon_path = os.path.join(dataset_path, 'icon/')
 sketch_path = os.path.join(dataset_path, 'sketch/')
 
 
@@ -12,14 +12,14 @@ def load_img(path):
     return cv2.resize(img, (100,100))
 
 
-def get_dict():
+def get_dict_categories():
     
-    photo_dictionary = {}
+    icon_dictionary = {}
 
-    for category in os.listdir(photo_path):
-        category_path = os.path.join(photo_path, category)
+    for category in os.listdir(icon_path):
+        category_path = os.path.join(icon_path, category)
 
-        photo_dictionary[category] = os.listdir(category_path)
+        icon_dictionary[category] = os.listdir(category_path)
 
     sketch_dictionary = {}
 
@@ -28,34 +28,50 @@ def get_dict():
 
         sketch_dictionary[category] = os.listdir(category_path) 
     
-    return photo_dictionary, sketch_dictionary
+    return icon_dictionary, sketch_dictionary
+
+def get_dict_icon_sketches():
+    
+    icon_sketches_dictionary = {}
+
+    for category in os.listdir(icon_path):
+        category_path_icon = os.path.join(icon_path, category)
+        category_path_sketch = os.path.join(sketch_path, category)
+        for icon in os.listdir(category_path_icon):
+            sketch_list = []
+            for sketch in os.listdir(category_path_sketch):
+                if icon.replace(".jpg","") == sketch.split("_")[0]:
+                    sketch_list.append(sketch)
+            icon_sketches_dictionary[icon] = sketch_list
+    
+    return icon_sketches_dictionary
 
 
-def get_batch(photo_dictionary, sketch_dictionary):
+def get_batch(icon_dictionary, sketch_dictionary):
     l = []
     p_ = []
     s_ = []
 
     for _ in range(128):
         if np.random.uniform() >= 0.5:
-            photo_class = np.random.choice(list(photo_dictionary))
-            photo = np.random.choice(photo_dictionary[photo_class])
-            photo_dictionary[photo_class].remove(photo)
-            p = photo_class + '/' + photo
+            icon_class = np.random.choice(list(icon_dictionary))
+            icon = np.random.choice(icon_dictionary[icon_class])
+            icon_dictionary[icon_class].remove(icon)
+            p = icon_class + '/' + icon
 
-            sketch_class = photo_class
+            sketch_class = icon_class
             sketch = np.random.choice(sketch_dictionary[sketch_class])
             sketch_dictionary[sketch_class].remove(sketch)
             s = sketch_class + '/' + sketch
             label = 1
 
         else:
-            x = list(photo_dictionary)
-            photo_class = np.random.choice(x)
-            photo = np.random.choice(photo_dictionary[photo_class])
-            photo_dictionary[photo_class].remove(photo)
-            p = photo_class + '/' + photo
-            x.remove(photo_class)
+            x = list(icon_dictionary)
+            icon_class = np.random.choice(x)
+            icon = np.random.choice(icon_dictionary[icon_class])
+            icon_dictionary[icon_class].remove(icon)
+            p = icon_class + '/' + icon
+            x.remove(icon_class)
 
             sketch_class = np.random.choice(x)
             sketch = np.random.choice(sketch_dictionary[sketch_class])
@@ -63,7 +79,7 @@ def get_batch(photo_dictionary, sketch_dictionary):
             s = sketch_class + '/' + sketch
             label = 0
 
-        p_.append(os.path.join(dataset_path, 'photo/', p))
+        p_.append(os.path.join(dataset_path, 'icon/', p))
         s_.append(os.path.join(dataset_path, 'sketch/', s))
         l.append(label)
     
