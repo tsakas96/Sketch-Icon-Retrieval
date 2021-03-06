@@ -42,7 +42,7 @@ def get_dict_icon_sketches():
             for sketch in os.listdir(category_path_sketch):
                 if icon.replace(".jpg","") == sketch.split("_")[0]:
                     sketch_list.append(sketch)
-            icon_sketches_dictionary[icon] = sketch_list
+            icon_sketches_dictionary[icon] = (category, sketch_list)
     
     return icon_sketches_dictionary
 
@@ -88,3 +88,60 @@ def get_batch(icon_dictionary, sketch_dictionary):
     labels = np.array(l)
 
     return images, sketches, labels
+
+def get_positive_pairs(icon_sketches_dictionary):
+    l = []
+    p_ = []
+    s_ = []
+
+    for icon, (category, sketch_list) in icon_sketches_dictionary.items():
+        p = category + '/' + icon
+
+        for sketch in sketch_list:
+            s = category + '/' + sketch
+            label = 1
+            p_.append(os.path.join(dataset_path, 'icon/', p))
+            s_.append(os.path.join(dataset_path, 'sketch/', s))
+            l.append(label)
+    
+    images = np.array([load_img(i) for i in p_])
+    sketches = np.array([load_img(i) for i in s_])
+    labels = np.array(l)
+
+    return images, sketches, labels
+
+def load_icons(icon_sketches_dictionary):
+    p_ = []
+
+    for icon, (category, _) in icon_sketches_dictionary.items():
+        p = category + '/' + icon
+        p_.append(os.path.join(dataset_path, 'icon/', p))
+    
+    icons = np.array([load_img(i) for i in p_])
+    icons.dump("icons.npy")
+
+    return icons
+
+def load_sketches(icon_sketches_dictionary):
+    s_ = []
+
+    for _, (category, sketch_list) in icon_sketches_dictionary.items():
+
+        for sketch in sketch_list:
+            s = category + '/' + sketch
+            s_.append(os.path.join(dataset_path, 'sketch/', s))
+    
+    sketches = np.array([load_img(i) for i in s_])
+    np.save(open('sketches.npy', 'wb'), sketches, allow_pickle=True)
+
+    return sketches
+
+dic = get_dict_icon_sketches()
+
+#icons = load_icons(dic)
+#print(icons.shape)
+#sketches = load_sketches(dic)
+sketches2 = np.load("sketches.npy", allow_pickle=True)
+print(sketches2.shape)
+
+#im, sk, lab = get_positive_pairs(dic)

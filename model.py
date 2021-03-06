@@ -71,7 +71,7 @@ def mynet(inp, reuse=False):
         
     return net
 
-
+# This is pairwise ranking loss which we can refer as constrastive loss
 def contrastive_loss(model1, model2, y, margin):
     with tf.name_scope("contrastive-loss"):
         d = tf.sqrt(tf.reduce_sum(tf.pow(model1-model2, 2), 1, keepdims=True))
