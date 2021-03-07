@@ -111,4 +111,28 @@ def create_positive_sketch_icon_indices(icons_name_cat, sketch_names_array):
     labels = np.array([l for l in label_list])
     return sketch_icon_indices, labels
 
+def create_negative_sketch_icon_indices(sketch_icon_indices_Train, len_negative):
+    icon_indeces_list = [row[1] for row in sketch_icon_indices_Train]
+    icon_indeces_set = {i for i in icon_indeces_list}
+    icon_indeces_list = list(icon_indeces_set)
+    negative_indeces = []
+    for row in sketch_icon_indices_Train:
+        index_sketch = row[0]
+        index_icon = row[1]
+        indices = create_random_uniform_indices(index_icon, len_negative, icon_indeces_list)
+        for index in indices:
+            negative_indeces.append((index_sketch, index))
+    return negative_indeces
 
+
+def create_random_uniform_indices(index_icon, len_negative, icon_indeces_list):
+    random_indices = []
+    count = 0
+    len_data = len(icon_indeces_list)
+    while count < len_negative:
+        index = np.random.randint(0,len_data)
+        if icon_indeces_list[index] != index_icon:
+            random_indices.append(icon_indeces_list[index])
+            count = count + 1
+
+    return random_indices
