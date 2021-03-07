@@ -46,102 +46,69 @@ def get_dict_icon_sketches():
     
     return icon_sketches_dictionary
 
-
-def get_batch(icon_dictionary, sketch_dictionary):
-    l = []
-    p_ = []
-    s_ = []
-
-    for _ in range(128):
-        if np.random.uniform() >= 0.5:
-            icon_class = np.random.choice(list(icon_dictionary))
-            icon = np.random.choice(icon_dictionary[icon_class])
-            icon_dictionary[icon_class].remove(icon)
-            p = icon_class + '/' + icon
-
-            sketch_class = icon_class
-            sketch = np.random.choice(sketch_dictionary[sketch_class])
-            sketch_dictionary[sketch_class].remove(sketch)
-            s = sketch_class + '/' + sketch
-            label = 1
-
-        else:
-            x = list(icon_dictionary)
-            icon_class = np.random.choice(x)
-            icon = np.random.choice(icon_dictionary[icon_class])
-            icon_dictionary[icon_class].remove(icon)
-            p = icon_class + '/' + icon
-            x.remove(icon_class)
-
-            sketch_class = np.random.choice(x)
-            sketch = np.random.choice(sketch_dictionary[sketch_class])
-            sketch_dictionary[sketch_class].remove(sketch)
-            s = sketch_class + '/' + sketch
-            label = 0
-
-        p_.append(os.path.join(dataset_path, 'icon/', p))
-        s_.append(os.path.join(dataset_path, 'sketch/', s))
-        l.append(label)
-    
-    images = np.array([load_img(i) for i in p_])
-    sketches = np.array([load_img(i) for i in s_])
-    labels = np.array(l)
-
-    return images, sketches, labels
-
-def get_positive_pairs(icon_sketches_dictionary):
-    l = []
-    p_ = []
-    s_ = []
-
-    for icon, (category, sketch_list) in icon_sketches_dictionary.items():
-        p = category + '/' + icon
-
-        for sketch in sketch_list:
-            s = category + '/' + sketch
-            label = 1
-            p_.append(os.path.join(dataset_path, 'icon/', p))
-            s_.append(os.path.join(dataset_path, 'sketch/', s))
-            l.append(label)
-    
-    images = np.array([load_img(i) for i in p_])
-    sketches = np.array([load_img(i) for i in s_])
-    labels = np.array(l)
-
-    return images, sketches, labels
-
 def load_icons(icon_sketches_dictionary):
-    p_ = []
+    filename = 'icons.npy'
+    filename2 = 'icons_name_cate.npy'
+    if os.path.isfile(filename) and os.path.isfile(filename2):
+        icons = np.load(filename, allow_pickle=True)
+        name_cat = np.load(filename2, allow_pickle=True)
+    else:
+        p_ = []
+        iconNames = []
+        categories = []
+        for icon, (category, _) in icon_sketches_dictionary.items():
+            p = category + '/' + icon
+            p_.append(os.path.join(dataset_path, 'icon/', p))
+            iconName = icon.replace(".jpg","")
+            iconNames.append(iconName)
+            categories.append(category)
+        
+        name_cat = np.column_stack((iconNames, categories))
+        np.save(open(filename2, 'wb'), name_cat, allow_pickle=True)
+        icons = np.array([load_img(i) for i in p_])
+        np.save(open(filename, 'wb'), icons, allow_pickle=True)
 
-    for icon, (category, _) in icon_sketches_dictionary.items():
-        p = category + '/' + icon
-        p_.append(os.path.join(dataset_path, 'icon/', p))
-    
-    icons = np.array([load_img(i) for i in p_])
-    icons.dump("icons.npy")
-
-    return icons
+    return icons, name_cat
 
 def load_sketches(icon_sketches_dictionary):
-    s_ = []
+    filename = 'sketches.npy'
+    filename2 = "sketch_names.npy"
+    if os.path.isfile(filename):
+        sketches = np.load(filename, allow_pickle=True)
+        sketch_names_array = np.load(filename2, allow_pickle=True)
+    else:
+        s_ = []
+        names = []
+        for _, (category, sketch_list) in icon_sketches_dictionary.items():
 
-    for _, (category, sketch_list) in icon_sketches_dictionary.items():
+            for sketch in sketch_list:
+                s = category + '/' + sketch
+                s_.append(os.path.join(dataset_path, 'sketch/', s))
+                # I am storing the sketch name without _(#).png which is the corresponding name of the icon
+                name = sketch.split("_")[0]
+                names.append(name)
+        
+        sketch_names_array = np.array([name for name in names])
+        np.save(open(filename2, 'wb'), sketch_names_array, allow_pickle=True)
+        sketches = np.array([load_img(i) for i in s_])
+        np.save(open(filename, 'wb'), sketches, allow_pickle=True)
 
-        for sketch in sketch_list:
-            s = category + '/' + sketch
-            s_.append(os.path.join(dataset_path, 'sketch/', s))
-    
-    sketches = np.array([load_img(i) for i in s_])
-    np.save(open('sketches.npy', 'wb'), sketches, allow_pickle=True)
+    return sketches, sketch_names_array
 
-    return sketches
+def create_positive_sketch_icon_indices(icons_name_cat, sketch_names_array):
+    icon_indices = []
+    sketch_indices = []
+    label_list = []
+    label = 1
+    for i in range(0, len(sketch_names_array)):
+        for j in range(0, len(icons_name_cat)):
+            if sketch_names_array[i] == icons_name_cat[j][0]:
+                sketch_indices.append(i)
+                icon_indices.append(j)
+                label_list.append(label)
+                break
+    sketch_icon_indices = np.column_stack((sketch_indices, icon_indices))
+    labels = np.array([l for l in label_list])
+    return sketch_icon_indices, labels
 
-dic = get_dict_icon_sketches()
 
-#icons = load_icons(dic)
-#print(icons.shape)
-#sketches = load_sketches(dic)
-sketches2 = np.load("sketches.npy", allow_pickle=True)
-print(sketches2.shape)
-
-#im, sk, lab = get_positive_pairs(dic)
