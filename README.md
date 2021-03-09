@@ -24,3 +24,5 @@ Both interpreter (bottom left) and Jupyter Kernel (top right) should be in path 
 For the Jupyter notebook to work in vscode, anaconda should be install because it has all the required
 packages to run.
 The python files is better to be in a different folder than the environment. In that way, github can be used easier to store only the python files and not the entire virtual environment.
+
+tensorflow version 2.3.0

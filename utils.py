@@ -116,13 +116,17 @@ def create_negative_sketch_icon_indices(sketch_icon_indices_Train, len_negative)
     icon_indeces_set = {i for i in icon_indeces_list}
     icon_indeces_list = list(icon_indeces_set)
     negative_indeces = []
+    label_list = []
+    label = 0
     for row in sketch_icon_indices_Train:
         index_sketch = row[0]
         index_icon = row[1]
         indices = create_random_uniform_indices(index_icon, len_negative, icon_indeces_list)
         for index in indices:
             negative_indeces.append((index_sketch, index))
-    return negative_indeces
+            label_list.append(label)
+    labels = np.array([l for l in label_list])
+    return negative_indeces, labels
 
 
 def create_random_uniform_indices(index_icon, len_negative, icon_indeces_list):
@@ -136,3 +140,42 @@ def create_random_uniform_indices(index_icon, len_negative, icon_indeces_list):
             count = count + 1
 
     return random_indices
+
+def get_batch(indices, icons, sketches):
+    icons_list = []
+    sketches_list = []
+    for sketch_index, icon_index in indices:
+        icons_list.append(icons[icon_index])
+        sketches_list.append(sketches[sketch_index])
+    
+    icons_array = np.array(icons_list)
+    sketches_array = np.array(sketches_list)
+    return icons_array, sketches_array
+
+# def get_batch2(indices, icons_name_cat, sketch_names_array):
+#     p_ = []
+#     s_ = []
+#     for sketch_index, icon_index in indices:
+#         icon = icons_name_cat[icon_index][0]
+#         category = icons_name_cat[icon_index][1]
+#         sketch = sketch_names_array[sketch_index][0]
+#         sketch_category = sketch_names_array[sketch_index][1]
+#         p = category + '/' + icon + '.jpg'
+#         p_.append(os.path.join(dataset_path, 'icon/', p))
+#         s = sketch_category + '/' + sketch
+#         s_.append(os.path.join(dataset_path, 'sketch/', s))
+
+#     icons = np.array([load_img(i) for i in p_])
+#     sketches = np.array([load_img(i) for i in s_])
+#     return icons, sketches
+
+# def find_sketch_names(icon_sketches_dictionary):
+#     names = []
+#     categories = []
+#     for _, (category, sketch_list) in icon_sketches_dictionary.items():
+#         for sketch in sketch_list:
+#             names.append(sketch)
+#             categories.append(category)
+
+#     name_cat = np.column_stack((names, categories)) 
+#     return name_cat
