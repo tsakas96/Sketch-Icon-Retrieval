@@ -37,7 +37,16 @@ class mynet(tf.keras.Model):
     return x
 
 def contrastive_loss(model1, model2, y, margin):
-    d = tf.sqrt(tf.reduce_sum(tf.pow(model1-model2, 2), 1, keepdims=True))
-    tmp = y * tf.square(d)    
-    tmp2 = (1 - y) * tf.square(tf.maximum((margin - d),0))
-    return tf.reduce_mean(tmp + tmp2)/2
+  d = tf.sqrt(tf.reduce_sum(tf.pow(model1-model2, 2), 1, keepdims=True))
+  tmp = y * tf.square(d)    
+  tmp2 = (1 - y) * tf.square(tf.maximum((margin - d),0))
+  return tf.reduce_mean(tmp + tmp2)/2
+
+def siamese_loss(model1, model2, y):
+  Q = 10
+  alpha = 2/Q
+  beta = 2*Q
+  gamma = -2.77/Q
+  d = tf.sqrt(tf.reduce_sum(tf.pow(model1-model2, 2), 1, keepdims=True))
+  loss = y * alpha * tf.square(d) + (1-y) * beta * tf.exp(gamma*d)
+  return loss

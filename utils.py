@@ -152,30 +152,30 @@ def get_batch(indices, icons, sketches):
     sketches_array = np.array(sketches_list)
     return icons_array, sketches_array
 
-# def get_batch2(indices, icons_name_cat, sketch_names_array):
-#     p_ = []
-#     s_ = []
-#     for sketch_index, icon_index in indices:
-#         icon = icons_name_cat[icon_index][0]
-#         category = icons_name_cat[icon_index][1]
-#         sketch = sketch_names_array[sketch_index][0]
-#         sketch_category = sketch_names_array[sketch_index][1]
-#         p = category + '/' + icon + '.jpg'
-#         p_.append(os.path.join(dataset_path, 'icon/', p))
-#         s = sketch_category + '/' + sketch
-#         s_.append(os.path.join(dataset_path, 'sketch/', s))
+def get_batch2(indices, icons_name_cat, sketch_names_array):
+    p_ = []
+    s_ = []
+    for sketch_index, icon_index in indices:
+        icon = icons_name_cat[icon_index][0]
+        category = icons_name_cat[icon_index][1]
+        sketch = sketch_names_array[sketch_index][0]
+        sketch_category = sketch_names_array[sketch_index][1]
+        p = category + '/' + icon + '.jpg'
+        p_.append(os.path.join(dataset_path, 'icon/', p))
+        s = sketch_category + '/' + sketch
+        s_.append(os.path.join(dataset_path, 'sketch/', s))
 
-#     icons = np.array([load_img(i) for i in p_])
-#     sketches = np.array([load_img(i) for i in s_])
-#     return icons, sketches
+    icons = np.array([load_img(i) for i in p_])
+    sketches = np.array([load_img(i) for i in s_])
+    return icons, sketches
 
-# def find_sketch_names(icon_sketches_dictionary):
-#     names = []
-#     categories = []
-#     for _, (category, sketch_list) in icon_sketches_dictionary.items():
-#         for sketch in sketch_list:
-#             names.append(sketch)
-#             categories.append(category)
+def find_sketch_names(icon_sketches_dictionary):
+    names = []
+    categories = []
+    for _, (category, sketch_list) in icon_sketches_dictionary.items():
+        for sketch in sketch_list:
+            names.append(sketch)
+            categories.append(category)
 
-#     name_cat = np.column_stack((names, categories)) 
-#     return name_cat
+    name_cat = np.column_stack((names, categories)) 
+    return name_cat
