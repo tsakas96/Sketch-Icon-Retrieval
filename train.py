@@ -96,8 +96,8 @@ def load_dataset():
 
 trainloader, testloader = load_dataset()
 
-num_epochs = 100
-margin = 1
+num_epochs = 1000
+margin = 0.3
 optimizer = tf.keras.optimizers.Adam(0.0001)
 tf.keras.backend.set_floatx('float32')
 siameseModel = mynet()
@@ -143,12 +143,10 @@ def train_step( icons, sketches , labels, margin):
 
 test_icon_indeces = set()
 test_sketch_indices = set()
-sketch_index = 0
 for s, i in test_set.indices:
     test_sketch_indices.add(s)
     test_icon_indeces.add(i)
 
-sketch_index =  np.random.choice(list(test_sketch_indices))
 
 
 test_sketch_list = []
@@ -200,15 +198,15 @@ for epoch in range(num_epochs):
             
             for j in range(len(top_k)):
                 index = top_k[j]
-                if i == 0 and test_sketch_name[i] == test_icon_name[index]:
+                if j == 0 and test_sketch_name[i] == test_icon_name[index]:
                     acc_1 = acc_1 + 1
                     acc_10 = acc_10 + 1
                     break
                 elif test_sketch_name[i] == test_icon_name[index]:
                     acc_10 = acc_10 + 1
                     break
-        print("Accurance of top 1: " + str(acc_1/len(test_sketches)))
-        print("Accurance of top 10: " + str(acc_10/len(test_sketches)))
+        print("Accuracy of top 1: " + str(acc_1/len(test_sketches)))
+        print("Accuracy of top 10: " + str(acc_10/len(test_sketches)))
 
 
 # for epoch in range(num_epochs):

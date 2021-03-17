@@ -138,7 +138,6 @@ def create_random_uniform_indices(index_icon, len_negative, icon_indeces_list):
         if icon_indeces_list[index] != index_icon:
             random_indices.append(icon_indeces_list[index])
             count = count + 1
-
     return random_indices
 
 def get_batch(indices, icons, sketches):
