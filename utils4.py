@@ -13,6 +13,12 @@ def load_img(path):
     img = cv2.imread(path)/255
     return cv2.resize(img, (100,100))
 
+def load_train_set():
+    return np.load(dataset_path + "train_set.npy")
+
+def load_test_set():
+    return np.load(dataset_path + "test_set.npy")
+
 def get_icons_and_sketches():
     
     icon_name = []
@@ -56,18 +62,41 @@ def positive_pairs_generator(icon_name_category, sketch_name_category):
         for icon, icon_category in icon_name_category:
             if sketch_category == icon_category and icon.replace(".jpg","") == sketch.split("_")[0]:
                 positive_pairs_list.append((sketch, sketch_category, icon, icon_category))
+                break
 
     positive_pairs_array = np.array(positive_pairs_list)
     return positive_pairs_array
 
-def triplets_generator(positive_pairs_array, icon_name_category):
-    negative_icon_category_list = []
+def possible_negative_pairs_generator(positive_pairs_array, icon_name_category):
+    possible_negative_pairs = {}
     for sketch, sketch_category,_,_ in positive_pairs_array:
-        negative_icon_category = find_negative_icon(sketch, sketch_category, icon_name_category)
+        negative_icon_category_list = []
+        for icon, category in icon_name_category:
+            if category == sketch_category and icon.replace(".jpg","") != sketch.split("_")[0]:
+                negative_icon_category_list.append((icon, category))
+        possible_negative_pairs[sketch] = negative_icon_category_list
+    return possible_negative_pairs
+
+def triplets_generator(positive_pairs_array, icon_name_category, possible_negative_pairs):
+    negative_icon_category_list = []
+    for sketch,_,_,_ in positive_pairs_array:
+        temp_list = possible_negative_pairs[sketch]
+        random_index = int(np.random.randint(0, len(temp_list)))
+        negative_icon_category = temp_list[random_index]
+        #negative_icon_category = find_negative_icon(sketch, sketch_category, icon_name_category)
         negative_icon_category_list.append(negative_icon_category)
     negative_icon_category_array = np.array(negative_icon_category_list)
     triplet_array = np.append(positive_pairs_array, negative_icon_category_array, axis=1)
     return triplet_array
+
+# def triplets_generator(positive_pairs_array, icon_name_category):
+#     negative_icon_category_list = []
+#     for sketch, sketch_category,_,_ in positive_pairs_array:
+#         negative_icon_category = find_negative_icon(sketch, sketch_category, icon_name_category)
+#         negative_icon_category_list.append(negative_icon_category)
+#     negative_icon_category_array = np.array(negative_icon_category_list)
+#     triplet_array = np.append(positive_pairs_array, negative_icon_category_array, axis=1)
+#     return triplet_array
 
 
 

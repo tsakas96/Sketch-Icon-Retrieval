@@ -22,7 +22,7 @@ class mynet(tf.keras.Model):
     self.classification_outpout = tf.keras.layers.Dense(NUM_CLASSES, activation='linear')
 
   
-  def call(self, x, training = None, model = None):
+  def call(self, x, training = None):
     x = self.l1_conv(x)
     x = self.l1_max_pool(x)
     x = self.l1_batch(x, training = training)
@@ -33,12 +33,11 @@ class mynet(tf.keras.Model):
     x = self.l3_max_pool(x)
     x = self.l3_batch(x, training = training)
     x = self.fc1(x)
-    x = self.fc2(x)
-    if(model == "Classification"):
-      x = self.classification_outpout(x)
-      x = tf.nn.softmax(x, axis = 1)
+    features = self.fc2(x)
+    class_output = self.classification_outpout(features)
+    class_output = tf.nn.softmax(class_output, axis = 1)
 
-    return x
+    return features, class_output
 
 
 def contrastive_loss(model1, model2, y, margin):
