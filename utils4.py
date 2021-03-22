@@ -155,6 +155,28 @@ def get_batch(batch_triplet_pairs, icon_dictionary, sketch_dictionary):
 
     return sketches, positive_icons, negative_icons
 
+def get_batch_low_ram(batch_triplet_pairs):
+    s_ = []
+    p_ = []
+    n_ = []
+    for row in batch_triplet_pairs:
+        sketch_name = row[0]
+        sketch_category = row[1]
+        positive_icon_name = row[2]
+        positive_icon_category = row[3]
+        negative_icon_name = row[4]
+        negative_icon_category = row[5]
+
+        s_.append(sketch_path + sketch_category + "/" + sketch_name)
+        p_.append(icon_path + positive_icon_category + "/" + positive_icon_name)
+        n_.append(icon_path + negative_icon_category + "/" + negative_icon_name)
+    
+    sketches = np.array([load_img(i) for i in s_])
+    positive_icons = np.array([load_img(i) for i in p_])
+    negative_icons = np.array([load_img(i) for i in n_])
+
+    return sketches, positive_icons, negative_icons
+
 def get_batch_sketches(batch_sketches):
     s_ = []
     for sketch, category in batch_sketches:
@@ -183,6 +205,16 @@ def get_batch_icons_targets(icon_name_category_batch, icon_dictionary, icon_cate
     targets = np.array([i for i in t_])
     return icons, targets
 
+def get_batch_icons_targets_low_ram(icon_name_category_batch, icon_categories_dic):
+    i_ = []
+    t_ = []
+    for icon_name, icon_category in icon_name_category_batch:
+        i_.append(icon_path + icon_category + "/" + icon_name)
+        t_.append(icon_categories_dic[icon_category])
+    icons = np.array([load_img(i) for i in i_])
+    targets = np.array([i for i in t_])
+    return icons, targets
+
 def get_batch_sketches_targets(sketch_name_category_batch, sketch_dictionary, sketch_categories_dic):
     s_ = []
     t_ = []
@@ -190,5 +222,15 @@ def get_batch_sketches_targets(sketch_name_category_batch, sketch_dictionary, sk
         s_.append(sketch_dictionary[sketch_name])
         t_.append(sketch_categories_dic[sketch_category])
     sketches = np.array([i for i in s_])
+    targets = np.array([i for i in t_])
+    return sketches, targets
+
+def get_batch_sketches_targets_low_ram(sketch_name_category_batch, sketch_categories_dic):
+    s_ = []
+    t_ = []
+    for sketch_name, sketch_category in sketch_name_category_batch:
+        s_.append(sketch_path + sketch_category + "/" + sketch_name)
+        t_.append(sketch_categories_dic[sketch_category])
+    sketches = np.array([load_img(i) for i in s_])
     targets = np.array([i for i in t_])
     return sketches, targets

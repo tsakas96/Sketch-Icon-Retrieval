@@ -30,28 +30,28 @@ def inception(x, filters):
     return Concatenate(axis=-1)([path1,path2,path3,path4])
 
 
-# def auxiliary(x, name=None):
-#     layer = AveragePooling2D(pool_size=(5,5), strides=3, padding='valid')(x)
-#     layer = Conv2D(filters=128, kernel_size=(1,1), strides=1, padding='same', activation='relu')(layer)
-#     layer = Flatten()(layer)
-#     layer = Dense(units=256, activation='relu')(layer)
-#     layer = Dropout(0.4)(layer)
-#     layer = Dense(units=5, activation='softmax', name=name)(layer)
-#     return layer
+def auxiliary(x, name=None, CLASS_NUM=0, training=None):
+    layer = AveragePooling2D(pool_size=(5,5), strides=3, padding='valid')(x)
+    layer = Conv2D(filters=128, kernel_size=(1,1), strides=1, padding='same', activation='relu')(layer)
+    layer = Flatten()(layer)
+    layer = Dense(units=256, activation='relu')(layer)
+    layer = Dropout(0.4)(layer, training=training)
+    layer = Dense(units=CLASS_NUM, activation='softmax', name=name)(layer)
+    return layer
 
 
-def googlenet():
+def googlenet(CLASS_NUM=0, training=None, model=None):
     layer_in = Input(shape=IMAGE_SHAPE)
     
     # stage-1
     layer = Conv2D(filters=64, kernel_size=(7,7), strides=2, padding='same', activation='relu')(layer_in)
     layer = MaxPooling2D(pool_size=(3,3), strides=2, padding='same')(layer)
-    layer = BatchNormalization()(layer)
+    layer = BatchNormalization()(layer, training=training)
 
     # stage-2
     layer = Conv2D(filters=64, kernel_size=(1,1), strides=1, padding='same', activation='relu')(layer)
     layer = Conv2D(filters=192, kernel_size=(3,3), strides=1, padding='same', activation='relu')(layer)
-    layer = BatchNormalization()(layer)
+    layer = BatchNormalization()(layer, training=training)
     layer = MaxPooling2D(pool_size=(3,3), strides=2, padding='same')(layer)
 
     # stage-3
@@ -61,11 +61,13 @@ def googlenet():
     
     # stage-4
     layer = inception(layer, [192,  (96,208),  (16,48),  64]) #4a
-    #aux1  = auxiliary(layer, name='aux1')
+    if model == "Classification":
+      aux1  = auxiliary(layer, name='aux1', CLASS_NUM=CLASS_NUM, training=training)
     layer = inception(layer, [160, (112,224),  (24,64),  64]) #4b
     layer = inception(layer, [128, (128,256),  (24,64),  64]) #4c
     layer = inception(layer, [112, (144,288),  (32,64),  64]) #4d
-    #aux2  = auxiliary(layer, name='aux2')
+    if model == "Classification":
+      aux2  = auxiliary(layer, name='aux2', CLASS_NUM=CLASS_NUM, training=training)
     layer = inception(layer, [256, (160,320), (32,128), 128]) #4e
     layer = MaxPooling2D(pool_size=(3,3), strides=2, padding='same')(layer)
     
@@ -76,17 +78,16 @@ def googlenet():
     
     # stage-6
     layer = Flatten()(layer)
-    layer = Dropout(0.4)(layer)
-    main = Dense(units=256, activation='linear')(layer)
-    #main = Dense(units=5, activation='softmax', name='main')(layer)
-    
-    #model = Model(inputs=layer_in, outputs=[main, aux1, aux2])
-    model = Model(inputs=layer_in, outputs=[main])
+    layer = Dropout(0.4)(layer, training=training)
+    features = Dense(units=256, activation='linear')(layer)
+    if model == "Triplet Loss" or model == "Triplet Loss-CWI":
+      model = Model(inputs=layer_in, outputs=features)
+    elif model == "Classification":
+      main = Dense(units=CLASS_NUM, activation='softmax', name='main')(features)
+      model = Model(inputs=layer_in, outputs=[main, aux1, aux2])
     
     return model
 
-#model = googlenet()
-#model.summary()
 
 def contrastive_loss(model1, model2, y, margin):
   d = tf.sqrt(tf.reduce_sum(tf.pow(model1-model2, 2), 1, keepdims=True))
@@ -102,3 +103,17 @@ def siamese_loss(model1, model2, y):
   d = tf.sqrt(tf.reduce_sum(tf.pow(model1-model2, 2), 1, keepdims=True))
   loss = y * alpha * tf.square(d) + (1-y) * beta * tf.exp(gamma*d)
   return loss
+
+def triplet_loss(sketches, positive_icons, negative_icons, margin):
+
+	positive_dist = tf.reduce_sum(tf.square(tf.subtract(sketches, positive_icons)), -1)
+	negative_dist = tf.reduce_sum(tf.square(tf.subtract(sketches, negative_icons)), -1)
+
+	loss_1 = tf.add(tf.subtract(positive_dist, negative_dist), margin)
+	loss = tf.reduce_sum(tf.maximum(loss_1, 0.0))
+
+	return loss
+
+def compute_cross_entropy(logits, labels):
+  cross_entropy= -tf.reduce_mean(tf.reduce_sum(labels*tf.math.log(tf.clip_by_value(logits,1e-10,1.0)), axis = 1))
+  return cross_entropy

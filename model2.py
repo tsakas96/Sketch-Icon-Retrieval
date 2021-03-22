@@ -22,7 +22,7 @@ class mynet(tf.keras.Model):
     self.classification_outpout = tf.keras.layers.Dense(NUM_CLASSES, activation='linear')
 
   
-  def call(self, x, training = None):
+  def call(self, x, training = None, model = None):
     x = self.l1_conv(x)
     x = self.l1_max_pool(x)
     x = self.l1_batch(x, training = training)
@@ -34,8 +34,12 @@ class mynet(tf.keras.Model):
     x = self.l3_batch(x, training = training)
     x = self.fc1(x)
     features = self.fc2(x)
-    class_output = self.classification_outpout(features)
-    class_output = tf.nn.softmax(class_output, axis = 1)
+    if model == "Triplet Loss" or model == "Triplet Loss-CWI":
+      return features
+    elif model == "Classification":
+      class_output = self.classification_outpout(features)
+      class_output = tf.nn.softmax(class_output, axis = 1)
+      return class_output
 
     return features, class_output
 
