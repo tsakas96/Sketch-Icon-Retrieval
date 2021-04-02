@@ -55,6 +55,22 @@ def load_icons_sketches_dic(icon_name_category, sketch_name_category):
         sketch_dictionary[sketch_name] = sketch_data
     return icon_dictionary, sketch_dictionary
 
+def load_icons_sketches_dic2(icon_name_category, sketch_name_category):
+    icon_dictionary = {}
+    for icon_name, icon_category in icon_name_category:
+        path = icon_path + icon_category + "/" + icon_name
+        with open(path,'rb') as f:
+          icon_data = f.read() 
+          icon_dictionary[icon_name] = icon_data
+    
+    sketch_dictionary = {}
+    for sketch_name, sketch_category in sketch_name_category:
+        path = sketch_path + sketch_category + "/" + sketch_name
+        with open(path,'rb') as f:
+          sketch_data = f.read()
+          sketch_dictionary[sketch_name] = sketch_data
+    return icon_dictionary, sketch_dictionary
+
 # create sketch to image specific positive pairs
 def positive_pairs_generator(icon_name_category, sketch_name_category):
     positive_pairs_list = []
@@ -139,11 +155,8 @@ def get_batch(batch_triplet_pairs, icon_dictionary, sketch_dictionary):
     n_ = []
     for row in batch_triplet_pairs:
         sketch_name = row[0]
-        #sketch_category = row[1]
         positive_icon_name = row[2]
-        #positive_icon_category = row[3]
         negative_icon_name = row[4]
-        #negative_icon_category = row[5]
 
         s_.append(sketch_dictionary[sketch_name])
         p_.append(icon_dictionary[positive_icon_name])
@@ -176,6 +189,61 @@ def get_batch_low_ram(batch_triplet_pairs):
     negative_icons = np.array([load_img(i) for i in n_])
 
     return sketches, positive_icons, negative_icons
+
+def get_batch_triplet_classification(batch_triplet_pairs, icon_dictionary, sketch_dictionary, icon_categories_dic, sketch_categories_dic):
+    s_ = []
+    p_ = []
+    n_ = []
+    i_c = []
+    s_c = []
+    for row in batch_triplet_pairs:
+        sketch_name = row[0]
+        sketch_category = row[1]
+        positive_icon_name = row[2]
+        positive_icon_category = row[3]
+        negative_icon_name = row[4]
+
+        s_.append(sketch_dictionary[sketch_name])
+        p_.append(icon_dictionary[positive_icon_name])
+        n_.append(icon_dictionary[negative_icon_name])
+        i_c.append(icon_categories_dic[positive_icon_category])
+        s_c.append(sketch_categories_dic[sketch_category])
+    
+    sketches = np.array(s_)
+    positive_icons = np.array(p_)
+    negative_icons = np.array(n_)
+    icon_targets = np.array(i_c)
+    sketch_targets = np.array(s_c)
+
+    return sketches, positive_icons, negative_icons, icon_targets, sketch_targets
+
+def get_batch_triplet_classification_low_ram(batch_triplet_pairs, icon_categories_dic, sketch_categories_dic):
+    s_ = []
+    p_ = []
+    n_ = []
+    i_c = []
+    s_c = []
+    for row in batch_triplet_pairs:
+        sketch_name = row[0]
+        sketch_category = row[1]
+        positive_icon_name = row[2]
+        positive_icon_category = row[3]
+        negative_icon_name = row[4]
+        negative_icon_category = row[5]
+
+        s_.append(sketch_path + sketch_category + "/" + sketch_name)
+        p_.append(icon_path + positive_icon_category + "/" + positive_icon_name)
+        n_.append(icon_path + negative_icon_category + "/" + negative_icon_name)
+        i_c.append(icon_categories_dic[positive_icon_category])
+        s_c.append(sketch_categories_dic[sketch_category])
+    
+    sketches = np.array([load_img(i) for i in s_])
+    positive_icons = np.array([load_img(i) for i in p_])
+    negative_icons = np.array([load_img(i) for i in n_])
+    icon_targets = np.array(i_c)
+    sketch_targets = np.array(s_c)
+
+    return sketches, positive_icons, negative_icons, icon_targets, sketch_targets
 
 def get_batch_sketches(batch_sketches):
     s_ = []

@@ -1,0 +1,2 @@
+model_checkpoint_path: "sketchClassification"
+all_model_checkpoint_paths: "sketchClassification"

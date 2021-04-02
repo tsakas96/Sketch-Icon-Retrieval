@@ -1,4 +1,4 @@
-absl-py @ file:///D:/bld/absl-py_1606235688386/work
+absl-py @ file:///home/conda/feedstock_root/build_artifacts/absl-py_1615404881292/work
 aiohttp @ file:///D:/bld/aiohttp_1614281086591/work
 astor @ file:///home/conda/feedstock_root/build_artifacts/astor_1593610464257/work
 astroid==2.3.3
@@ -15,7 +15,7 @@ cffi @ file:///D:/bld/cffi_1613414140225/work
 chardet @ file:///D:/bld/chardet_1610093646853/work
 click==7.1.2
 colorama==0.4.3
-cryptography @ file:///D:/bld/cryptography_1612993898605/work
+cryptography @ file:///D:/bld/cryptography_1615406182527/work
 cycler==0.10.0
 decorator==4.4.2
 gast @ file:///home/conda/feedstock_root/build_artifacts/gast_1596839682936/work
@@ -48,13 +48,13 @@ olefile @ file:///home/conda/feedstock_root/build_artifacts/olefile_160286652116
 opt-einsum==0+untagged.61.gd905544.dirty
 parso @ file:///home/conda/feedstock_root/build_artifacts/parso_1607618318316/work
 pickleshare @ file:///home/conda/feedstock_root/build_artifacts/pickleshare_1602536217715/work
-Pillow @ file:///D:/bld/pillow_1614689932919/work
+Pillow @ file:///D:/bld/pillow_1615244206091/work
 prompt-toolkit @ file:///home/conda/feedstock_root/build_artifacts/prompt-toolkit_1613068548426/work
 protobuf==3.15.5
 pyasn1==0.4.8
 pyasn1-modules==0.2.7
 pycparser @ file:///home/conda/feedstock_root/build_artifacts/pycparser_1593275161868/work
-Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1613412098605/work
+Pygments @ file:///home/conda/feedstock_root/build_artifacts/pygments_1615243893546/work
 PyJWT @ file:///home/conda/feedstock_root/build_artifacts/pyjwt_1610910308735/work
 pylint==2.4.4
 pyOpenSSL @ file:///home/conda/feedstock_root/build_artifacts/pyopenssl_1608055815057/work
