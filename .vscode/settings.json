@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\programming\\ThesisModelsCuda\\python.exe"
+    "python.pythonPath": "C:\\programming\\ThesisModelsCuda\\python.exe",
+    "jupyter.jupyterServerType": "local"
 }

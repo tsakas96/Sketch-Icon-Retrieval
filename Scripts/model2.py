@@ -84,18 +84,18 @@ def googlenet(CLASS_NUM=0, training=None):
     return model
 
 
-def contrastive_loss(model1, model2, y, margin):
-  d = tf.sqrt(tf.reduce_sum(tf.pow(model1-model2, 2), 1, keepdims=True))
+def contrastive_loss(sketches, icons, y, margin):
+  d = tf.reduce_sum(tf.square(tf.subtract(sketches, icons)), -1)
   tmp = y * tf.square(d)    
   tmp2 = (1 - y) * tf.square(tf.maximum((margin - d),0))
   return tf.reduce_mean(tmp + tmp2)/2
 
-def siamese_loss(model1, model2, y):
+def siamese_loss(sketches, icons, y):
   Q = 10
   alpha = 2/Q
   beta = 2*Q
   gamma = -2.77/Q
-  d = tf.sqrt(tf.reduce_sum(tf.pow(model1-model2, 2), 1, keepdims=True))
+  d = tf.reduce_sum(tf.square(tf.subtract(sketches, icons)), -1)
   loss = y * alpha * tf.square(d) + (1-y) * beta * tf.exp(gamma*d)
   return loss
 
