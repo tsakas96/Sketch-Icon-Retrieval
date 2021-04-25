@@ -73,7 +73,7 @@ requests-oauthlib @ file:///home/conda/feedstock_root/build_artifacts/requests-o
 rsa @ file:///home/conda/feedstock_root/build_artifacts/rsa_1614171254180/work
 scikit-learn @ file:///D:/bld/scikit-learn_1611079981849/work
 scipy @ file:///C:/bld/scipy_1609458016927/work
-six==1.14.0
+six @ file:///home/conda/feedstock_root/build_artifacts/six_1590081179328/work
 tensorboard @ file:///home/conda/feedstock_root/build_artifacts/tensorboard_1610699261066/work/tensorboard-2.4.1-py3-none-any.whl
 tensorboard-plugin-wit @ file:///home/conda/feedstock_root/build_artifacts/tensorboard-plugin-wit_1611075653546/work/tensorboard_plugin_wit-1.8.0-py3-none-any.whl
 tensorflow==2.3.0
