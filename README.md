@@ -1,4 +1,4 @@
-# Sketc-Icon-Retrieval
+# Sketch-Icon-Retrieval
 
 ## Command for creating and updating the requirements.txt
 pip freeze > requirements.txt
