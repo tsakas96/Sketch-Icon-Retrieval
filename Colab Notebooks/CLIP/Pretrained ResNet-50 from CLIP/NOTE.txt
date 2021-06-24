@@ -1,0 +1,1 @@
+To use this model locally you have to install the requirements file provided in this folder since we ran it in a different virtual environment than the rest of the models.

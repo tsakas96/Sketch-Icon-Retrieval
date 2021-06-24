@@ -1,5 +1,6 @@
 # Sketch-Icon-Retrieval
 
+# 1)Setup a virtual environment using conda - We use vscode
 ## Command for creating and updating the requirements.txt
 pip freeze > requirements.txt
 
@@ -23,6 +24,11 @@ Both interpreter (bottom left) and Jupyter Kernel (top right) should be in path 
 # Important Notes
 For the Jupyter notebook to work in vscode, anaconda should be install because it has all the required
 packages to run.
-The python files is better to be in a different folder than the environment. In that way, github can be used easier to store only the python files and not the entire virtual environment.
+The python files are better to be in a different folder than the environment. In that way, github can be used easier to store only the python files and not the entire virtual environment.
 
 tensorflow version 2.3.0
+
+# 2) Run Notebooks on Google Colab or locally
+To run the notebooks on google colab or locally, the imported util and model files should be in the same directory as the notebook.
+The models are in the models folder while the utils files are in the utils folder which both folders are in Scripts.
+In the Optimized folder we include three notebooks which are also included in the triplet folder. We use the tf.data.Dataset to read faster the data from memory.
