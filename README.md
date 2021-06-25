@@ -30,5 +30,8 @@ tensorflow version 2.3.0
 
 # 2) Run Notebooks on Google Colab or locally
 To run the notebooks on google colab or locally, the imported util and model files should be in the same directory as the notebook.
-The models are in the models folder while the utils files are in the utils folder which both folders are in Scripts.
+The models are in the models folder while the utils files are in the utils folder and both folders are in Scripts.
+
 In the Optimized folder we include three notebooks which are also included in the triplet folder. We use the tf.data.Dataset to read faster the data from memory.
+
+In the Results-Cluster we provide all the models we trained

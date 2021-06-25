@@ -1,0 +1,2 @@
+model_checkpoint_path: "sketchSiameseWithCWI"
+all_model_checkpoint_paths: "sketchSiameseWithCWI"
